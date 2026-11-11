@@ -120,19 +120,21 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
         <h3 className="font-grunge text-32 md:text-48 uppercase tracking-wide text-base-900">
           Visual Artifacts &amp; Exhibition
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Image Gallery Showcase - 2 columns on mobile */}
+        <div className="grid grid-cols-2 gap-3 sm:gap-6 md:gap-8">
           {project.images.map((imgSrc, index) => (
             <div
               key={index}
-              className="relative h-[320px] sm:h-[400px] border border-base-400/40 bg-base-200/60 overflow-hidden shadow-xl"
+              className="relative h-[160px] sm:h-[260px] md:h-[400px] border border-base-400/40 bg-base-200/60 overflow-hidden shadow-xl"
             >
               <Image
                 src={imgSrc}
                 alt={`${project.title} Screenshot ${index + 1}`}
                 fill
                 className="object-cover transition-transform duration-700 hover:scale-105"
+                sizes="(max-width: 640px) 50vw, 50vw"
               />
-              <div className="absolute bottom-2 left-2 font-mono text-11 uppercase text-base-400 bg-base-100/90 px-2 py-0.5 border border-base-400/30">
+              <div className="absolute bottom-1.5 left-1.5 sm:bottom-2 sm:left-2 font-mono text-[9px] sm:text-11 uppercase text-base-400 bg-base-100/90 px-1.5 py-0.5 border border-base-400/30">
                 FRAME // 0{index + 1}
               </div>
             </div>
