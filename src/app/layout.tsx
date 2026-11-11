@@ -32,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth dark">
+    <html lang="en" className="dark">
       <body className="min-h-screen text-base-900 antialiased selection:bg-base-900 selection:text-base-100">
         {/* Subtle noise texture filter over background */}
         <div className="noise-overlay" />
