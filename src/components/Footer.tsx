@@ -26,7 +26,7 @@ export default function Footer() {
           alt="Barcode Stamp"
           width={130}
           height={40}
-          className="opacity-70 invert"
+          className="color-white opacity-70"
         />
       </div>
 

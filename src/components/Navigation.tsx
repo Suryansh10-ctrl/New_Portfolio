@@ -61,8 +61,8 @@ export default function Navigation() {
   ];
 
   return (
-    <header className="relative z-30 w-full pt-6 pb-8 md:pt-8 md:pb-12">
-      <nav className="flex items-center justify-between border-b border-base-400/40 pb-5">
+    <header className="sticky top-0 z-40 w-full bg-[#121212]/90 backdrop-blur-md pt-4 pb-4 md:pt-5 md:pb-5 transition-all border-b border-base-400/40">
+      <nav className="flex items-center justify-between">
         {/* Brand / Logo */}
         <Link
           href="/"

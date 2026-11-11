@@ -40,7 +40,7 @@ export default function RootLayout({
         {/* Global wrapper with max width */}
         <div className="relative z-10 mx-auto min-h-screen max-w-7xl px-4 sm:px-8 lg:px-12 flex flex-col justify-between">
           <Navigation />
-          <main className="flex-1 flex flex-col gap-16 md:gap-24">
+          <main className="flex-1 flex flex-col gap-16 md:gap-24 pt-4 md:pt-8">
             {children}
           </main>
           <Footer />

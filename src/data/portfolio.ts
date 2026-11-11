@@ -343,7 +343,7 @@ export const educationData: EducationItem[] = [
   {
     degree: "B.Tech in Artificial Intelligence & Machine Learning",
     institution: "COER University, Roorkee",
-    period: "2022 - 2026",
+    period: "2024 - 2028",
     details:
       "Specializing in AI/ML fundamentals, Data Structures & Algorithms, Object-Oriented Programming (Java/Python), and Database Management Systems.",
   },
