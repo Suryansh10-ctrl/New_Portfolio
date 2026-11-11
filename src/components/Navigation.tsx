@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import { personalInfo } from "@/data/portfolio";
 import { Menu, X, ArrowUpRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -11,30 +12,47 @@ export default function Navigation() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Close menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
+
+  // Prevent background scrolling when menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [mobileMenuOpen]);
+
   const navLinks = [
-    { label: "Home", href: "/" },
-    { label: "Works", href: "/works" },
-    { label: "About", href: "/about" },
-    { label: "Contact", href: "/contact" },
+    { label: "Home", href: "/", number: "01" },
+    { label: "Works", href: "/works", number: "02" },
+    { label: "About", href: "/about", number: "03" },
+    { label: "Contact", href: "/contact", number: "04" },
   ];
 
   return (
-    <header className="relative z-30 w-full pt-8 pb-12">
-      <nav className="flex items-center justify-between border-b border-base-400/40 pb-6">
-        {/* Brand / Logo */}
+    <header className="relative z-40 w-full pt-6 pb-8 md:pt-8 md:pb-12">
+      <nav className="flex items-center justify-between border-b border-base-400/40 pb-5">
+        {/* Brand / Logo - always on a single line */}
         <Link
           href="/"
-          className="group flex items-center gap-3 font-grunge text-24 sm:text-28 md:text-32 tracking-wider text-base-900 transition-colors hover:text-base-700"
+          className="group flex items-center gap-2.5 font-grunge text-26 sm:text-30 md:text-34 tracking-wider text-base-900 transition-colors hover:text-base-700 whitespace-nowrap shrink-0"
         >
           <span>{personalInfo.name}</span>
-          <span className="hidden sm:inline-block text-12 font-mono uppercase tracking-widest text-base-500 border border-base-400 px-2 py-0.5">
+          <span className="text-11 font-mono uppercase tracking-widest text-base-500 border border-base-400/60 px-1.5 py-0.5 bg-base-200/50">
             Dev
           </span>
         </Link>
 
-        {/* Desktop Links */}
-        <div className="hidden md:flex items-center gap-6 md:gap-10">
-          <ul className="flex items-center gap-5 md:gap-8 font-mono text-14 md:text-16 uppercase tracking-wider">
+        {/* Desktop Links (Hidden below lg screens) */}
+        <div className="hidden lg:flex items-center gap-10">
+          <ul className="flex items-center gap-8 font-mono text-15 uppercase tracking-wider">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
@@ -43,7 +61,7 @@ export default function Navigation() {
                     href={link.href}
                     className={`transition-colors underline-offset-8 hover:text-base-900 hover:underline ${
                       isActive
-                        ? "text-base-900 underline font-semibold"
+                        ? "text-base-900 underline font-bold"
                         : "text-base-600"
                     }`}
                   >
@@ -57,75 +75,128 @@ export default function Navigation() {
           {/* Quick CTA */}
           <Link
             href="/contact"
-            className="hidden lg:inline-flex items-center gap-2 border border-base-900 bg-base-900 px-4 py-2 font-mono text-12 uppercase tracking-widest text-base-100 transition-all duration-300 hover:bg-transparent hover:text-base-900"
+            className="inline-flex items-center gap-2 border-2 border-base-900 bg-base-900 px-5 py-2 font-mono text-12 uppercase tracking-widest text-base-100 transition-all duration-300 hover:bg-transparent hover:text-base-900"
           >
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
             Hire Me
           </Link>
         </div>
 
-        {/* Mobile Hamburger Toggle Button */}
-        <div className="flex items-center gap-3 md:hidden">
+        {/* Mobile / Tablet Controls (Visible on all screens below lg) */}
+        <div className="flex items-center gap-3 lg:hidden">
           <Link
             href="/contact"
-            className="inline-flex items-center gap-1.5 border border-base-900 bg-base-900 px-3 py-1 font-mono text-11 uppercase tracking-widest text-base-100"
+            className="inline-flex items-center gap-1.5 border border-base-900 bg-base-900 px-3 py-1.5 font-mono text-11 uppercase tracking-widest text-base-100 hover:bg-transparent hover:text-base-900 transition-colors"
           >
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            Hire
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>Hire</span>
           </Link>
+
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 border border-base-400/60 bg-base-200/50 text-base-900 focus:outline-none cursor-pointer"
+            className="flex items-center gap-1.5 border-2 border-base-900 bg-base-200/80 px-3 py-1.5 text-base-900 focus:outline-none transition-all active:scale-95 cursor-pointer shadow-md"
             aria-label="Toggle navigation menu"
           >
-            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {mobileMenuOpen ? (
+              <>
+                <X className="h-5 w-5" />
+                <span className="font-mono text-11 uppercase font-bold tracking-wider">Close</span>
+              </>
+            ) : (
+              <>
+                <Menu className="h-5 w-5" />
+                <span className="font-mono text-11 uppercase font-bold tracking-wider">Menu</span>
+              </>
+            )}
           </button>
         </div>
       </nav>
 
-      {/* Mobile Drawer Menu */}
+      {/* Full-Screen Brutalist Mobile Drawer Overlay */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
+            initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
-            className="md:hidden absolute top-full left-0 right-0 border-b border-base-400/50 bg-base-100/95 backdrop-blur-md p-6 z-50 shadow-2xl space-y-6"
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            className="fixed inset-0 top-[76px] z-50 bg-base-100/98 backdrop-blur-xl border-t border-base-400/40 p-6 sm:p-8 flex flex-col justify-between overflow-y-auto lg:hidden"
           >
-            <ul className="flex flex-col gap-4 font-mono text-16 uppercase tracking-wider">
+            {/* Top metadata */}
+            <div className="flex items-center justify-between border-b border-base-400/30 pb-4 font-mono text-11 uppercase tracking-widest text-base-500">
+              <span>NAV_SYSTEM // v1.0</span>
+              <span className="text-emerald-400 flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                {personalInfo.availability}
+              </span>
+            </div>
+
+            {/* Navigation Links with Raw Brutalist Styling */}
+            <ul className="flex flex-col gap-4 my-8">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href;
                 return (
-                  <li key={link.href}>
+                  <li key={link.href} className="border-b border-base-400/20 pb-3">
                     <Link
                       href={link.href}
                       onClick={() => setMobileMenuOpen(false)}
-                      className={`block py-1 transition-colors ${
-                        isActive
-                          ? "text-base-900 font-bold underline underline-offset-4"
-                          : "text-base-600 hover:text-base-900"
-                      }`}
+                      className="group flex items-baseline justify-between w-full"
                     >
-                      {link.label}
+                      <div className="flex items-baseline gap-4">
+                        <span className="font-mono text-13 text-base-500 font-bold">
+                          [{link.number}]
+                        </span>
+                        <span
+                          className={`font-grunge text-44 sm:text-56 uppercase tracking-tight transition-colors ${
+                            isActive
+                              ? "text-base-900 underline underline-offset-8 decoration-2"
+                              : "text-base-600 group-hover:text-base-900"
+                          }`}
+                        >
+                          {link.label}
+                        </span>
+                      </div>
+                      <ArrowUpRight
+                        className={`h-6 w-6 transition-transform ${
+                          isActive
+                            ? "text-base-900"
+                            : "text-base-400 group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-base-900"
+                        }`}
+                      />
                     </Link>
                   </li>
                 );
               })}
             </ul>
 
-            <div className="pt-4 border-t border-base-400/30 flex items-center justify-between">
-              <span className="font-mono text-12 text-base-500 uppercase tracking-widest">
-                {personalInfo.availability}
-              </span>
-              <Link
-                href="/contact"
-                onClick={() => setMobileMenuOpen(false)}
-                className="inline-flex items-center gap-1 font-mono text-12 uppercase tracking-widest text-base-900 underline underline-offset-4 font-bold"
-              >
-                <span>Connect</span>
-                <ArrowUpRight className="h-3.5 w-3.5" />
-              </Link>
+            {/* Bottom Drawer Footer: Socials & Barcode */}
+            <div className="pt-6 border-t border-base-400/30 space-y-6">
+              <div className="flex flex-wrap gap-4 font-mono text-13 uppercase tracking-wider">
+                {personalInfo.socials.map((social) => (
+                  <a
+                    key={social.name}
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-base-700 hover:text-base-900 underline underline-offset-4 decoration-1"
+                  >
+                    {social.name}
+                  </a>
+                ))}
+              </div>
+
+              <div className="flex items-center justify-between pt-2">
+                <Image
+                  src="/assets/ui/barcode.svg"
+                  alt="Barcode"
+                  width={110}
+                  height={34}
+                  className="opacity-70 invert"
+                />
+                <span className="font-mono text-11 text-base-500 uppercase">
+                  {personalInfo.name} &copy; 2026
+                </span>
+              </div>
             </div>
           </motion.div>
         )}
