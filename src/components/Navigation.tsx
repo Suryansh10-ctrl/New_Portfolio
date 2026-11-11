@@ -1,30 +1,42 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { personalInfo } from "@/data/portfolio";
+import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Navigation() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Close menu on route change
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [pathname]);
 
-  // Lock background scroll when mobile menu is open
+  // Lock background scroll and handle Escape key
   useEffect(() => {
     if (mobileMenuOpen) {
       document.body.style.overflow = "hidden";
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") setMobileMenuOpen(false);
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        document.body.style.overflow = "unset";
+        window.removeEventListener("keydown", handleKeyDown);
+      };
     } else {
       document.body.style.overflow = "unset";
     }
-    return () => {
-      document.body.style.overflow = "unset";
-    };
   }, [mobileMenuOpen]);
 
   const navLinks = [
@@ -80,14 +92,15 @@ export default function Navigation() {
           </Link>
         </div>
 
-        {/* Mobile Menu Circular Button */}
+        {/* Mobile Menu Trigger Button (Circular with two vertical bars) */}
         <div className="flex items-center gap-3 lg:hidden">
           <button
+            type="button"
             onClick={() => setMobileMenuOpen(true)}
-            className="w-10 h-10 rounded-full border-2 border-white flex items-center justify-center text-white bg-black/60 hover:bg-white hover:text-black transition-all active:scale-95 cursor-pointer shadow-lg"
+            className="w-11 h-11 rounded-full border-2 border-white flex items-center justify-center text-white bg-black/80 hover:bg-white hover:text-black transition-all active:scale-95 cursor-pointer shadow-xl"
             aria-label="Open navigation menu"
           >
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1.5">
               <span className="w-[2.5px] h-4 bg-current rounded-full"></span>
               <span className="w-[2.5px] h-4 bg-current rounded-full"></span>
             </div>
@@ -95,57 +108,77 @@ export default function Navigation() {
         </div>
       </nav>
 
-      {/* Full-Screen Minimalist Mobile Navigation Overlay matching screenshot */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[9999] bg-black text-white flex flex-col justify-between p-6 sm:p-8"
-            style={{ backgroundColor: "#000000" }}
-          >
-            {/* Top Right Close Button (Circular with two vertical bars) */}
-            <div className="w-full flex justify-end">
-              <button
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-11 h-11 rounded-full border-2 border-white flex items-center justify-center text-white bg-black hover:bg-white hover:text-black transition-all active:scale-95 cursor-pointer"
-                aria-label="Close menu"
+      {/* Full-Screen Portal Overlay (Rendered directly in document.body to avoid stacking context traps) */}
+      {mounted &&
+        createPortal(
+          <AnimatePresence>
+            {mobileMenuOpen && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
+                className="fixed inset-0 z-[999999] bg-black text-white flex flex-col justify-between p-6 sm:p-8"
+                style={{ backgroundColor: "#000000" }}
+                onClick={(e) => {
+                  // Clicking outside the links closes the menu
+                  if (e.target === e.currentTarget) {
+                    setMobileMenuOpen(false);
+                  }
+                }}
               >
-                <div className="flex items-center gap-1.5">
-                  <span className="w-[3px] h-4 bg-current rounded-full"></span>
-                  <span className="w-[3px] h-4 bg-current rounded-full"></span>
-                </div>
-              </button>
-            </div>
-
-            {/* Vertically and Horizontally Centered Navigation Links */}
-            <div className="flex-1 flex flex-col items-center justify-center gap-8 sm:gap-10 -mt-10">
-              {navLinks.map((link) => {
-                const isActive = pathname === link.href;
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`font-grunge text-36 sm:text-44 tracking-wider uppercase underline underline-offset-8 decoration-2 transition-all ${
-                      isActive
-                        ? "text-white decoration-white opacity-100"
-                        : "text-white decoration-white opacity-90 hover:opacity-100 hover:tracking-widest"
-                    }`}
+                {/* Top Right Close Button */}
+                <div className="w-full flex justify-end">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-12 h-12 rounded-full border-2 border-white flex items-center justify-center text-white bg-black hover:bg-white hover:text-black transition-all active:scale-90 cursor-pointer shadow-2xl z-[1000000]"
+                    aria-label="Close menu"
                   >
-                    {link.label}
-                  </Link>
-                );
-              })}
-            </div>
+                    <X className="h-5 w-5 stroke-[2.5]" />
+                  </button>
+                </div>
 
-            {/* Empty footer spacer for perfect balance */}
-            <div className="h-10"></div>
-          </motion.div>
+                {/* Centered Navigation Links */}
+                <div
+                  className="flex-1 flex flex-col items-center justify-center gap-8 sm:gap-10 -mt-10"
+                  onClick={(e) => {
+                    // Clicking in empty areas between links also closes
+                    if (e.target === e.currentTarget) {
+                      setMobileMenuOpen(false);
+                    }
+                  }}
+                >
+                  {navLinks.map((link) => {
+                    const isActive = pathname === link.href;
+                    return (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`font-grunge text-36 sm:text-44 tracking-wider uppercase underline underline-offset-8 decoration-2 transition-all cursor-pointer ${
+                          isActive
+                            ? "text-white decoration-white opacity-100 font-bold"
+                            : "text-white decoration-white opacity-90 hover:opacity-100 hover:tracking-widest"
+                        }`}
+                      >
+                        {link.label}
+                      </Link>
+                    );
+                  })}
+                </div>
+
+                {/* Empty bottom spacer */}
+                <div className="h-10 pointer-events-none"></div>
+              </motion.div>
+            )}
+          </AnimatePresence>,
+          document.body
         )}
-      </AnimatePresence>
     </header>
   );
 }
