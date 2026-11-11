@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { personalInfo } from "@/data/portfolio";
-import { Mail, MapPin, Send, CheckCircle2, ArrowUpRight } from "lucide-react";
+import { Mail, MapPin, Send, CheckCircle2, ArrowUpRight, Copy, Check } from "lucide-react";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -13,6 +13,13 @@ export default function ContactPage() {
     message: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const copyEmail = () => {
+    navigator.clipboard.writeText(personalInfo.email);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2500);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,14 +67,31 @@ export default function ContactPage() {
                 <div className="p-2 border border-base-400/40 bg-base-100 shrink-0">
                   <Mail className="h-5 w-5 text-base-800" />
                 </div>
-                <div>
+                <div className="flex-1">
                   <span className="text-11 uppercase text-base-500 block">Email Address</span>
-                  <a
-                    href={`mailto:${personalInfo.email}`}
-                    className="text-15 md:text-16 font-bold text-base-900 hover:underline"
-                  >
-                    {personalInfo.email}
-                  </a>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <a
+                      href={`mailto:${personalInfo.email}`}
+                      className="text-15 md:text-16 font-bold text-base-900 hover:underline"
+                    >
+                      {personalInfo.email}
+                    </a>
+                    <button
+                      onClick={copyEmail}
+                      className="p-1 border border-base-400/50 bg-base-100 hover:bg-base-200 text-base-700 hover:text-base-900 transition-colors"
+                      title="Copy email to clipboard"
+                      aria-label="Copy email"
+                    >
+                      {copied ? (
+                        <Check className="h-3.5 w-3.5 text-emerald-400" />
+                      ) : (
+                        <Copy className="h-3.5 w-3.5" />
+                      )}
+                    </button>
+                    {copied && (
+                      <span className="text-11 text-emerald-400 font-mono">Copied!</span>
+                    )}
+                  </div>
                 </div>
               </div>
 
