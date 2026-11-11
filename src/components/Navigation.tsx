@@ -66,10 +66,10 @@ export default function Navigation() {
         {/* Brand / Logo */}
         <Link
           href="/"
-          className="group flex items-center gap-2.5 font-grunge text-26 sm:text-30 md:text-34 tracking-wider text-base-900 transition-colors hover:text-base-700 whitespace-nowrap shrink-0"
+          className="group flex items-center gap-2.5 font-grunge text-32 sm:text-36 md:text-42 lg:text-46 tracking-wider text-base-900 transition-colors hover:text-base-700 whitespace-nowrap shrink-0"
         >
           <span>{personalInfo.name}</span>
-          <span className="text-11 font-mono uppercase tracking-widest text-base-500 border border-base-400/60 px-1.5 py-0.5 bg-base-200/50">
+          <span className="text-11 sm:text-12 font-mono uppercase tracking-widest text-base-500 border border-base-400/60 px-2 py-0.5 bg-base-200/50">
             Dev
           </span>
         </Link>

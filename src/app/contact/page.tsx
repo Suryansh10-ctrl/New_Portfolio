@@ -138,7 +138,7 @@ export default function ContactPage() {
               alt="Barcode"
               width={140}
               height={45}
-              className="opacity-70 invert"
+              className="opacity-70 color-white"
             />
             <span className="font-mono text-11 uppercase tracking-widest text-base-500">
               TRANSMIT // OK

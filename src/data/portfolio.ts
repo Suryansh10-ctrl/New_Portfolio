@@ -54,14 +54,14 @@ export const personalInfo = {
     "I'm constantly learning, exploring new technologies, and turning creative ideas into functional digital experiences. My goal is to build impactful products, collaborate with innovative teams, and grow as a software developer."
   ],
   availability: "AVAILABLE FOR WORK",
-  email: "suryanshsharma.dev@gmail.com",
-  phone: "+91 98765 43210",
+  email: "suryanshsharma09.dev@gmail.com",
+  phone: "+91 9368 375925",
   location: "Roorkee / Uttarakhand, India",
   socials: [
     { name: "GitHub", url: "https://github.com/Suryansh10-ctrl" },
-    { name: "LinkedIn", url: "https://www.linkedin.com/" },
-    { name: "LeetCode", url: "https://leetcode.com/" },
-    { name: "Email", url: "mailto:suryanshsharma.dev@gmail.com" },
+    { name: "LinkedIn", url: "https://www.linkedin.com/in/suryan925a98309sh-sharma-/" },
+    { name: "LeetCode", url: "https://leetcode.com/u/suryamsh09/" },
+    { name: "Email", url: "mailto:suryanshsharma09.dev@gmail.com" },
   ],
 };
 
