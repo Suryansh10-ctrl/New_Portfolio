@@ -45,17 +45,53 @@ export default function AboutPage() {
           </div>
         </div>
 
-        {/* Portrait container */}
-        <div className="lg:col-span-5 h-[420px] sm:h-[500px] relative border-2 border-base-400/50 bg-base-200 overflow-hidden shadow-2xl">
-          <Image
-            src="/assets/images/peter.jpg"
-            alt={personalInfo.name}
-            fill
-            className="object-cover grayscale contrast-125 transition-all duration-700 hover:grayscale-0"
-            priority
-          />
-          <div className="absolute top-3 left-3 bg-base-900 border border-base-100 px-3 py-1 font-mono text-11 uppercase text-base-100">
-            LOC // {personalInfo.location}
+        {/* Developer Identity / Tech Passport Card */}
+        <div className="lg:col-span-5 w-full border-2 border-base-400/50 bg-base-200/50 p-6 sm:p-8 font-mono shadow-2xl space-y-6">
+          <div className="flex items-center justify-between border-b border-base-400/30 pb-4">
+            <span className="text-11 uppercase text-base-500 tracking-widest">
+              DEV_ID // CARD
+            </span>
+            <span className="text-11 uppercase text-emerald-400 bg-base-100 px-2 py-0.5 border border-base-400/40">
+              COER_AIML
+            </span>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <span className="text-11 uppercase text-base-500 block">Name</span>
+              <span className="text-20 font-grunge uppercase tracking-wide text-base-900 block">
+                {personalInfo.name}
+              </span>
+            </div>
+
+            <div>
+              <span className="text-11 uppercase text-base-500 block">Current Specialization</span>
+              <span className="text-14 font-bold text-base-800 block">
+                Artificial Intelligence &amp; Machine Learning
+              </span>
+              <span className="text-12 text-base-600">College of Engineering Roorkee (COER)</span>
+            </div>
+
+            <div>
+              <span className="text-11 uppercase text-base-500 block">Primary Architecture</span>
+              <span className="text-14 font-bold text-base-800 block">
+                Full-Stack MERN &bull; Next.js &bull; Python
+              </span>
+            </div>
+
+            <div>
+              <span className="text-11 uppercase text-base-500 block">Base Location</span>
+              <span className="text-13 text-base-800 block">
+                {personalInfo.location}
+              </span>
+            </div>
+          </div>
+
+          <div className="pt-4 border-t border-base-400/30 flex items-center justify-between">
+            <span className="text-11 text-emerald-400 uppercase font-semibold">
+              Status: Available For Work
+            </span>
+            <span className="text-10 text-base-500">AUTH // 2026</span>
           </div>
         </div>
       </section>
