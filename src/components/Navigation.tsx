@@ -22,20 +22,34 @@ export default function Navigation() {
     setMobileMenuOpen(false);
   }, [pathname]);
 
-  // Lock background scroll and handle Escape key
+  // Completely lock all scrolling (desktop & mobile touch) when menu is open
   useEffect(() => {
     if (mobileMenuOpen) {
       document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+      document.body.style.touchAction = "none";
+
+      const preventTouch = (e: TouchEvent) => {
+        if (e.target instanceof Element && e.target.closest("a, button")) {
+          return;
+        }
+        e.preventDefault();
+      };
+
+      document.addEventListener("touchmove", preventTouch, { passive: false });
+
       const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === "Escape") setMobileMenuOpen(false);
       };
       window.addEventListener("keydown", handleKeyDown);
+
       return () => {
-        document.body.style.overflow = "unset";
+        document.body.style.overflow = "";
+        document.documentElement.style.overflow = "";
+        document.body.style.touchAction = "";
+        document.removeEventListener("touchmove", preventTouch);
         window.removeEventListener("keydown", handleKeyDown);
       };
-    } else {
-      document.body.style.overflow = "unset";
     }
   }, [mobileMenuOpen]);
 
@@ -92,7 +106,7 @@ export default function Navigation() {
           </Link>
         </div>
 
-        {/* Mobile Menu Trigger Button (Circular with two vertical bars) */}
+        {/* Mobile Menu Trigger Button */}
         <div className="flex items-center gap-3 lg:hidden">
           <button
             type="button"
@@ -108,7 +122,7 @@ export default function Navigation() {
         </div>
       </nav>
 
-      {/* Full-Screen Portal Overlay (Rendered directly in document.body to avoid stacking context traps) */}
+      {/* 100% Fixed Non-Scrollable Full-Screen Mobile Menu Overlay */}
       {mounted &&
         createPortal(
           <AnimatePresence>
@@ -118,41 +132,30 @@ export default function Navigation() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.15 }}
-                className="fixed inset-0 z-[999999] bg-black text-white flex flex-col justify-between p-6 sm:p-8"
+                className="fixed inset-0 w-screen h-screen h-[100dvh] z-[999999] bg-black text-white flex flex-col items-center justify-center overflow-hidden overscroll-none touch-none select-none"
                 style={{ backgroundColor: "#000000" }}
                 onClick={(e) => {
-                  // Clicking outside the links closes the menu
                   if (e.target === e.currentTarget) {
                     setMobileMenuOpen(false);
                   }
                 }}
               >
-                {/* Top Right Close Button */}
-                <div className="w-full flex justify-end">
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setMobileMenuOpen(false);
-                    }}
-                    className="w-12 h-12 rounded-full border-2 border-white flex items-center justify-center text-white bg-black hover:bg-white hover:text-black transition-all active:scale-90 cursor-pointer shadow-2xl z-[1000000]"
-                    aria-label="Close menu"
-                  >
-                    <X className="h-5 w-5 stroke-[2.5]" />
-                  </button>
-                </div>
-
-                {/* Centered Navigation Links */}
-                <div
-                  className="flex-1 flex flex-col items-center justify-center gap-8 sm:gap-10 -mt-10"
+                {/* Fixed Top Right Close Button */}
+                <button
+                  type="button"
                   onClick={(e) => {
-                    // Clicking in empty areas between links also closes
-                    if (e.target === e.currentTarget) {
-                      setMobileMenuOpen(false);
-                    }
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setMobileMenuOpen(false);
                   }}
+                  className="absolute top-6 right-6 w-12 h-12 rounded-full border-2 border-white flex items-center justify-center text-white bg-black hover:bg-white hover:text-black transition-all active:scale-90 cursor-pointer shadow-2xl z-[1000000]"
+                  aria-label="Close menu"
                 >
+                  <X className="h-5 w-5 stroke-[2.5]" />
+                </button>
+
+                {/* Centered Navigation Links - Exactly in viewport center */}
+                <div className="flex flex-col items-center justify-center gap-7 sm:gap-9">
                   {navLinks.map((link) => {
                     const isActive = pathname === link.href;
                     return (
@@ -171,9 +174,6 @@ export default function Navigation() {
                     );
                   })}
                 </div>
-
-                {/* Empty bottom spacer */}
-                <div className="h-10 pointer-events-none"></div>
               </motion.div>
             )}
           </AnimatePresence>,
