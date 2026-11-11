@@ -25,7 +25,7 @@ export default function Hero() {
             alt="Barcode"
             width={90}
             height={30}
-            className="hidden sm:block opacity-60 invert"
+            className="color-white hidden sm:block opacity-60 "
           />
         </div>
       </div>
