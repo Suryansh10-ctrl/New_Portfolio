@@ -13,7 +13,7 @@ export default function WorksPage() {
     "Frontend",
     "MERN Stack",
     "Next.js",
-    "Python / AI",
+    "Full-Stack / AI",
   ];
 
   const filteredProjects =
