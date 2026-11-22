@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { personalInfo } from "@/data/portfolio";
-import { Mail, MapPin, Send, CheckCircle2, ArrowUpRight, Copy, Check } from "lucide-react";
+import { Mail, MapPin, Send, CheckCircle2, ArrowUpRight, Copy, Check, Loader2, AlertCircle } from "lucide-react";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -14,6 +14,8 @@ export default function ContactPage() {
   });
   const [submitted, setSubmitted] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const copyEmail = () => {
     navigator.clipboard.writeText(personalInfo.email);
@@ -21,13 +23,58 @@ export default function ContactPage() {
     setTimeout(() => setCopied(false), 2500);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({ name: "", email: "", subject: "", message: "" });
-    }, 4000);
+    setIsSubmitting(true);
+    setErrorMessage("");
+
+    const accessKey =
+      process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY || "";
+
+    if (!accessKey) {
+      setErrorMessage(
+        "Form service access key is missing. Please add NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY to your .env.local file."
+      );
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          access_key: accessKey,
+          name: formData.name,
+          email: formData.email,
+          subject: `[Portfolio Inquiry] ${formData.subject}`,
+          message: formData.message,
+          from_name: `${formData.name} (Portfolio)`,
+          replyto: formData.email,
+          botcheck: "",
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setSubmitted(true);
+        setFormData({ name: "", email: "", subject: "", message: "" });
+      } else {
+        setErrorMessage(
+          result.message || "Failed to send transmission. Please try again or email directly."
+        );
+      }
+    } catch {
+      setErrorMessage(
+        "Network transmission error. Please check your connection or email directly."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -163,11 +210,25 @@ export default function ContactPage() {
                   Transmission Received!
                 </h4>
                 <p className="font-mono text-14 text-base-700 max-w-md">
-                  Thank you for reaching out, {formData.name || "friend"}. I will review your inquiry and get back to you promptly.
+                  Thank you for reaching out. Your transmission has been delivered directly to my inbox. I will review your inquiry and get back to you promptly.
                 </p>
+                <button
+                  type="button"
+                  onClick={() => setSubmitted(false)}
+                  className="mt-4 border border-base-400 px-6 py-2 font-mono text-12 uppercase tracking-wider text-base-900 hover:bg-base-900 hover:text-base-100 transition-colors"
+                >
+                  Send Another Transmission
+                </button>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6 font-mono text-14">
+                {errorMessage && (
+                  <div className="flex items-start gap-3 border border-red-500/40 bg-red-950/20 p-4 text-red-400 font-mono text-13">
+                    <AlertCircle className="h-5 w-5 shrink-0 text-red-400" />
+                    <span>{errorMessage}</span>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Name */}
                   <div className="space-y-2">
@@ -233,10 +294,20 @@ export default function ContactPage() {
                 {/* Submit button */}
                 <button
                   type="submit"
-                  className="group w-full md:w-auto inline-flex items-center justify-center gap-3 border-2 border-base-900 bg-base-900 px-8 py-3.5 font-mono text-14 uppercase tracking-widest text-base-100 transition-all hover:bg-transparent hover:text-base-900 cursor-pointer"
+                  disabled={isSubmitting}
+                  className="group w-full md:w-auto inline-flex items-center justify-center gap-3 border-2 border-base-900 bg-base-900 px-8 py-3.5 font-mono text-14 uppercase tracking-widest text-base-100 transition-all hover:bg-transparent hover:text-base-900 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
-                  <span>Dispatch Message</span>
-                  <Send className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>Transmitting...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Dispatch Message</span>
+                      <Send className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </>
+                  )}
                 </button>
               </form>
             )}
